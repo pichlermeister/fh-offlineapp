@@ -6,7 +6,7 @@ var $window = $(window);
 var dataToSave = false;
 
 function append(d) {
-	$data.append('<li>' + d + '</li>');
+	$data.append('<li><input type="checkbox" value="'+d.checked+'"<span>' + d.title + '</span></li>');
 }
 
 function showStuff() {

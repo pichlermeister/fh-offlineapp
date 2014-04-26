@@ -1,19 +1,30 @@
 <!doctype html>
-<html lang="en" manifest="mani.manifest">
+<html lang="en">
 <head>
 	<meta charset="UTF-8">
 	<title>Document</title>
 </head>
 <body>
 	<h1>Hello World!</h1>
+	<span id="onlineicon"/>
 	<ul id="todos">
 		
 	</ul>
 
-	<input type="text" id="newentry">
+	<input type="text" name="title" id="newentry">
 	<button id="send">Abschicken</button>
+	
 	<script src="jquery.min.js"></script>
 	<script>
+
+	$(document).on('click', 'input[type="checkbox"]',function(){
+		console.log($(this));
+		var todo = mytodos.entries[$(this).attr('data-val')];
+		todo.checked=this.checked;
+		if (todo.checked)
+			todo.timestamp = Date.now();
+		saveData();
+	});
 
 	var mytodos;
 	var offlinedata = JSON.parse(localStorage.getItem("offlinetodo")) || [];
@@ -38,7 +49,9 @@
 		$('#todos').html('');
 		var todos = mytodos;
 		for(var i = 0; i < todos.entries.length; i++) {
-			var el = $("<li>" + todos.entries[i] + "</li>");
+			var item = todos.entries[i];
+			var checked = !!item.checked?' checked':'';
+			var el = $("<li><input type='checkbox'"+checked+" data-val='"+i+"' />" + item.title + "</li>");
 			$('#todos').append(el);
 		}
 	}
@@ -51,6 +64,12 @@
 
 	$(window).on('online', function(){
 		saveData();
+		alert("online");
+		$('#onlineicon').text="online";
+	});
+	$(window).on('offline', function(){
+		alert("OFFLINE");
+		$('#onlineicon').text="OFFLINE";
 	});
 
 	if(!navigator.onLine) {
@@ -60,7 +79,9 @@
 
 	$('#send').on('click', function(e) {
 		var text = $('#newentry').val();
-		mytodos.entries.push(text);
+		var newtodo = {};
+		newtodo.title=text;
+		mytodos.entries.push(newtodo);
 		if(navigator.onLine) {
 			saveData();
 		} else {
